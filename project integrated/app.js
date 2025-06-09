@@ -137,3 +137,33 @@ aulaSelect.addEventListener('change', (e) => {
 
 // 🔁 Inicializa carregando todas as matérias
 loadMaterias()
+
+// 🧠 Mostra o email do usuário logado
+async function checkAuthStatus() {
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const userMenu = document.getElementById('user-menu')
+  const userEmailSpan = document.getElementById('user-email')
+  const userDropdown = document.getElementById('user-dropdown')
+
+  if (user) {
+    userMenu.classList.remove('hidden')
+    userEmailSpan.textContent = user.email
+  } else {
+    // Redireciona se não estiver logado
+    window.location.href = 'login.html'
+  }
+
+  // Toggle do dropdown
+  userEmailSpan.addEventListener('click', () => {
+    userDropdown.classList.toggle('hidden')
+  })
+
+  // Logout
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await supabase.auth.signOut()
+    window.location.href = 'index.html'
+  })
+}
+
+checkAuthStatus()

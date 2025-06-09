@@ -69,7 +69,7 @@ body {
   padding: 60px 20px;
   background:
     linear-gradient(to bottom, rgba(230, 245, 255, 0.6), rgba(248, 252, 255, 0.6)),
-    url("diogo.png") no-repeat center center / cover;
+    url("images/diogo.jpg") no-repeat center center / cover;
 }
 
 .hero-content {
@@ -107,19 +107,58 @@ body {
   background-color: #5aa7e9;
 }
 
-.site-footer {
-  background-color: #f0f8ff;
-  padding: 20px 0;
-  text-align: center;
-  font-size: 0.9rem;
-  color: #888;
-  border-top: 1px solid #e0e0e0;
+/* ---------------------- Footer / footer.html --------------------- */
+
+footer {
+    background-color: #89CFF0;
+    padding: 40px 10em;
+    padding-bottom: 0px;
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    font-size: 12px;
+    margin: 0;
 }
 
-.site-footer .container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 0 20px;
+.copy {
+    margin-top: 2%;
+    padding: 0;
+    text-align: center;
+}
+
+.ascolunasdofooter {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4em;
+    max-width: 100%;
+    margin: 0 auto;
+    font-size: 14px;
+}
+
+.coluna {
+    min-width: 200px;
+    flex: 1;
+}
+
+.coluna p,
+.coluna a {
+    margin: 8px 0;
+    font-size: 13px;
+    color: #333;
+    text-decoration: none;
+}
+
+.coluna p:first-child,
+.coluna a {
+    font-weight: bold;
+    color: #303030;
+    font-size: 14px;
+}
+
+.imagenszinhas {
+    margin-top: 10px;
+    display: flex;
+    gap: 12px;
 }
 
 @keyframes fadeIn {

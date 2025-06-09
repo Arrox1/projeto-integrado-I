@@ -11,7 +11,7 @@
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="logo">
-        <img src="W3BSCHOOL-19-05-2025.png" alt="W3BSCHOOL Logo" />
+        <img src="images/logo.png" alt="W3BSCHOOL Logo" />
       </a>
     </div>
   </header>
@@ -23,8 +23,15 @@
       <form id="auth-form">
         <input type="email" id="email" placeholder="Email" required />
         <input type="password" id="password" placeholder="Senha" required />
+  
+  <!-- Campo a adicionar -->
+        <div id="confirm-password-container" style="display: none;">
+          <input type="password" id="confirm-password" placeholder="Confirmar Senha" />
+        </div>
+
         <button type="submit" id="auth-button">Entrar</button>
       </form>
+
 
       <p id="toggle-text">
         Ainda não tens conta? <a href="#" id="toggle-link">Criar conta</a>

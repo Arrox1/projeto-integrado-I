@@ -1,0 +1,327 @@
+/* ---------------------- Homepage / index.html --------------------- */
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.homepage {
+  background: #f0f8ff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.site-header {
+  background-color: #89CFF0;
+  color: white;
+  padding: 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: none;
+  margin-bottom: 30px;
+}
+
+.site-header .container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo img {
+  height: 50px;
+  object-fit: contain;
+}
+
+.site-header .nav-link {
+  margin-left: 20px;
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.site-header .nav-link:hover {
+  text-decoration: underline;
+}
+
+.nav-link.highlight {
+  background: white;
+  color: #89CFF0;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-weight: bold;
+}
+
+.filters {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filters input[type="text"] {
+  flex: 2;
+  min-width: 200px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  transition: border-color 0.3s;
+}
+.filters input[type="text"]:focus {
+  outline: none;
+  border-color: #89CFF0;
+}
+.filters select {
+  flex: 1;
+  min-width: 140px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1.5px solid #ddd;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  cursor: pointer;
+}
+.filters select:focus {
+  border-color: #89CFF0;
+  outline: none;
+}
+
+.lesson-list {
+  list-style: none;
+  max-height: 300px;
+  overflow-y: auto;
+  border-top: 1px solid #eee;
+  padding-left: 0;
+}
+.lesson-list li {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.lesson-list li:hover, .lesson-list li.active {
+  background-color: #89CFF0;
+  color: white;
+  font-weight: 600;
+}
+.video-player {
+  margin-top: 25px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 12px rgb(0 0 0 / 0.1);
+}
+video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+#videoTitle {
+  padding: 12px 15px;
+  background:#f0f8ff;
+  margin: 0;
+}
+footer {
+  margin-top: 40px;
+  color: #888;
+  font-size: 0.9rem;
+  text-align: center;
+  width: 100%;
+  max-width: 1000px;
+}
+
+main {
+  width: 100%;
+  max-width: 1000px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.1);
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+
+}
+
+.hero {
+  position: relative;
+  flex: 1;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background:
+    linear-gradient(to bottom, rgba(230, 245, 255, 0.6), rgba(248, 252, 255, 0.6)),
+    url("diogo.png") no-repeat center center / cover;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 600px;
+  animation: fadeIn 1s ease-in;
+}
+
+.hero-content h2 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.btn-primary {
+  background-color: #89CFF0;
+  color: white;
+  font-weight: 600;
+  padding: 14px 30px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #5aa7e9;
+}
+
+.site-footer {
+  background-color: #f0f8ff;
+  padding: 20px 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #888;
+  border-top: 1px solid #e0e0e0;
+}
+
+.site-footer .container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.user-menu {
+  position: relative;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.user-menu span {
+  color: white;
+  padding: 8px 16px;
+  border-radius: 25px;
+  display: inline-block;
+}
+
+.user-menu .dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background-color: white;
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  min-width: 120px;
+  z-index: 1000;
+}
+
+.user-menu .dropdown button {
+  background: none;
+  border: none;
+  color: #333;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.user-menu .dropdown button:hover {
+  background-color: #f0f0f0;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ---------------------- Footer / footer.html --------------------- */
+
+footer {
+  position: fixed;
+    background-color: #89CFF0;
+    padding: 40px 10em;
+    padding-bottom: 0px;
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    font-size: 12px;
+    margin: 0;
+}
+
+.copy {
+    margin-top: 2%;
+    padding: 0;
+    text-align: center;
+}
+
+.ascolunasdofooter {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4em;
+    max-width: 100%;
+    margin: 0 auto;
+    font-size: 14px;
+}
+
+.coluna {
+    min-width: 200px;
+    flex: 1;
+}
+
+.coluna p,
+.coluna a {
+    margin: 8px 0;
+    font-size: 13px;
+    color: #333;
+    text-decoration: none;
+}
+
+.coluna p:first-child,
+.coluna a {
+    font-weight: bold;
+    color: #303030;
+    font-size: 14px;
+}
+
+.imagenszinhas {
+    margin-top: 10px;
+    display: flex;
+    gap: 12px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

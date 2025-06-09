@@ -10,6 +10,7 @@ const formTitle = document.getElementById("form-title");
 const authButton = document.getElementById("auth-button");
 const toggleText = document.getElementById("toggle-text");
 const errorMessage = document.getElementById("error-message");
+const confirmPasswordContainer = document.getElementById("confirm-password-container");
 
 let isLogin = true;
 
@@ -21,9 +22,10 @@ function updateForm() {
     ? `Ainda não tens conta? <a href="#" id="toggle-link">Criar conta</a>`
     : `Já tens conta? <a href="#" id="toggle-link">Entrar</a>`;
   errorMessage.textContent = "";
+  confirmPasswordContainer.style.display = isLogin ? "none" : "block";
 }
 
-// Evento para alternar entre login e criar conta (delegation)
+// Alternar entre login e criação de conta
 toggleText.addEventListener("click", (e) => {
   if (e.target && e.target.id === "toggle-link") {
     e.preventDefault();
@@ -40,14 +42,25 @@ form.addEventListener("submit", async (e) => {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
+  if (!email || !password) {
+    errorMessage.textContent = "Preenche todos os campos.";
+    return;
+  }
+
   if (isLogin) {
     const { error } = await client.auth.signInWithPassword({ email, password });
     if (error) {
       errorMessage.textContent = "Erro ao entrar: " + error.message;
     } else {
-      window.location.href = "videos.html"; // Redireciona após login bem-sucedido
+      window.location.href = "videos.html";
     }
   } else {
+    const confirmPassword = document.getElementById("confirm-password").value;
+    if (password !== confirmPassword) {
+      errorMessage.textContent = "As senhas não coincidem.";
+      return;
+    }
+
     const { error } = await client.auth.signUp({ email, password });
     if (error) {
       errorMessage.textContent = "Erro ao criar conta: " + error.message;
@@ -59,5 +72,5 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// Inicialização do formulário
+// Inicializar
 updateForm();

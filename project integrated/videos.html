@@ -2,16 +2,25 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>W3BSCHOOL - Vídeos</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>W3BSCHOOL - Início</title>
+  <link rel="stylesheet" href="videos.css" />
 </head>
-<body>
-  <header>
-    <h1>W3B<span class="school">SCHOOL</span></h1>
-    <nav>
-      <a href="index.html" class="btn-link">← Voltar para Home</a>
-    </nav>
+<body class="homepage">
+  <header class="site-header">
+    <div class="container">
+       <a href="" class="logo">
+        <img src="images/logo.png" alt="" />
+       </a>
+      <nav>
+        <div id="user-menu" class="user-menu hidden">
+          <span id="user-email"></span>
+          <div id="user-dropdown" class="dropdown hidden">
+            <button id="logout-btn">Logout</button>
+          </div>
+        </div>
+      </nav>
+    </div>
   </header>
   <main>
     <section class="filters">
@@ -36,7 +45,6 @@
       <h3 id="videoTitle"></h3>
     </div>
   </main>
-
   <script type="module" src="app.js"></script>
 </body>
 </html>
