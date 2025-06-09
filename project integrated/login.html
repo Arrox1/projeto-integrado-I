@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>W3BSCHOOL - Entrar</title>
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="login.css" />
+</head>
+<body class="homepage">
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="logo">
+        <img src="W3BSCHOOL-19-05-2025.png" alt="W3BSCHOOL Logo" />
+      </a>
+    </div>
+  </header>
+
+  <main class="hero">
+    <section class="login-container">
+      <h2 id="form-title">Entrar na W3BSCHOOL</h2>
+
+      <form id="auth-form">
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Senha" required />
+        <button type="submit" id="auth-button">Entrar</button>
+      </form>
+
+      <p id="toggle-text">
+        Ainda não tens conta? <a href="#" id="toggle-link">Criar conta</a>
+      </p>
+
+      <p class="error-message" id="error-message"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2025 W3BSCHOOL. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="login.js"></script>
+</body>
+</html>

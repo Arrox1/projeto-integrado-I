@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>W3BSCHOOL - Vídeos</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>W3B<span class="school">SCHOOL</span></h1>
+    <nav>
+      <a href="index.html" class="btn-link">← Voltar para Home</a>
+    </nav>
+  </header>
+  <main>
+    <section class="filters">
+      <input type="text" id="searchMateria" placeholder="Pesquisar matéria..." autocomplete="off" />
+      <select id="materiaSelect" aria-label="Selecione a Matéria">
+        <option value="">Selecione a Matéria</option>
+      </select>
+      <select id="moduloSelect" aria-label="Selecione o Módulo" disabled>
+        <option value="">Selecione o Módulo</option>
+      </select>
+      <select id="aulaSelect" aria-label="Selecione a Aula" disabled>
+        <option value="">Selecione a Aula</option>
+      </select>
+    </section>
+
+    <ul class="lesson-list" id="lessonList"></ul>
+
+    <div class="video-player" id="videoPlayer" style="display:none;">
+      <video controls id="videoElement" poster="">
+        Seu navegador não suporta o elemento de vídeo.
+      </video>
+      <h3 id="videoTitle"></h3>
+    </div>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

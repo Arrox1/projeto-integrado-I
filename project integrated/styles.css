@@ -1,0 +1,184 @@
+/* Reset e estilo base */
+* {
+  margin: 0; padding: 0; box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+  background: #f5f7fa;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+header {
+  margin-bottom: 20px;
+  text-align: center;
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+header h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+}
+header h1 .school {
+  color: #89CFF0;
+}
+nav a.btn-link {
+  font-size: 0.9rem;
+  color: #89CFF0;
+  text-decoration: none;
+  font-weight: 600;
+  border: 2px solid transparent;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+nav a.btn-link:hover {
+  background-color: #89CFF0;
+  color: white;
+  border-color: #89CFF0;
+}
+
+main {
+  width: 100%;
+  max-width: 1000px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.1);
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-main {
+  max-width: 500px;
+  background: #fff;
+  border-radius: 15px;
+  padding: 40px 30px;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 0.12);
+  text-align: center;
+}
+.home-main h2 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+  color: #333;
+}
+.home-main p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+.btn-primary {
+  display: inline-block;
+  background-color: #89CFF0;
+  color: white;
+  font-weight: 700;
+  padding: 15px 30px;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  text-decoration: none;
+  box-shadow: 0 5px 12px rgb(137 207 240 / 0.5);
+  transition: background-color 0.3s ease;
+}
+.btn-primary:hover {
+  background-color: #5aa7e9;
+}
+
+.filters {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filters input[type="text"] {
+  flex: 2;
+  min-width: 200px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  transition: border-color 0.3s;
+}
+.filters input[type="text"]:focus {
+  outline: none;
+  border-color: #89CFF0;
+}
+.filters select {
+  flex: 1;
+  min-width: 140px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1.5px solid #ddd;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  cursor: pointer;
+}
+.filters select:focus {
+  border-color: #89CFF0;
+  outline: none;
+}
+
+.lesson-list {
+  list-style: none;
+  max-height: 300px;
+  overflow-y: auto;
+  border-top: 1px solid #eee;
+  padding-left: 0;
+}
+.lesson-list li {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.lesson-list li:hover, .lesson-list li.active {
+  background-color: #89CFF0;
+  color: white;
+  font-weight: 600;
+}
+.video-player {
+  margin-top: 25px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 12px rgb(0 0 0 / 0.1);
+}
+video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+#videoTitle {
+  padding: 12px 15px;
+  background:#f0f8ff;
+  margin: 0;
+}
+footer {
+  margin-top: 40px;
+  color: #888;
+  font-size: 0.9rem;
+  text-align: center;
+  width: 100%;
+  max-width: 1000px;
+}
+@media (max-width: 600px) {
+  main {
+    padding: 15px;
+  }
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filters input[type="text"], .filters select {
+    min-width: 100%;
+  }
+  header {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

@@ -1,0 +1,134 @@
+/* ---------------------- Homepage / index.html --------------------- */
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.homepage {
+  background: #f0f8ff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.site-header {
+  background-color: #89CFF0;
+  color: white;
+  padding: 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  border: none;
+}
+
+.site-header .container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo img {
+  height: 50px;
+  object-fit: contain;
+}
+
+.site-header .nav-link {
+  margin-left: 20px;
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.site-header .nav-link:hover {
+  text-decoration: underline;
+}
+
+.nav-link.highlight {
+  background: white;
+  color: #89CFF0;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-weight: bold;
+}
+
+.hero {
+  position: relative;
+  flex: 1;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background:
+    linear-gradient(to bottom, rgba(230, 245, 255, 0.6), rgba(248, 252, 255, 0.6)),
+    url("diogo.png") no-repeat center center / cover;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 600px;
+  animation: fadeIn 1s ease-in;
+}
+
+.hero-content h2 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.btn-primary {
+  background-color: #89CFF0;
+  color: white;
+  font-weight: 600;
+  padding: 14px 30px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: background-color 0.3s;
+}
+
+.btn-primary:hover {
+  background-color: #5aa7e9;
+}
+
+.site-footer {
+  background-color: #f0f8ff;
+  padding: 20px 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #888;
+  border-top: 1px solid #e0e0e0;
+}
+
+.site-footer .container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
