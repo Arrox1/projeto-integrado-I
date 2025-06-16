@@ -7,7 +7,23 @@
   <link rel="stylesheet" href="upload.css" />
 </head>
 <body>
-  <div class="container">
+    <header class="site-header">
+    <div class="container">
+       <a href="" class="logo">
+        <img src="images/logo.png" alt="" />
+       </a>
+      <nav>
+        <div id="user-menu" class="user-menu hidden">
+          <span id="user-email"></span>
+          <div id="user-dropdown" class="dropdown hidden">
+            <button id="logout-btn">Logout</button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container2">
     <h1>Fazer Upload de Vídeo</h1>
     <form id="upload-form">
       <input type="file" id="video-file" accept="video/*" required />
@@ -17,7 +33,8 @@
     <p id="status"></p>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script src="upload.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="upload.js"></script>
+<script type="module" src="showloggedemail.js"></script>
 </body>
 </html>
