@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Upload de Vídeo</title>
+  <link rel="stylesheet" href="upload.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Fazer Upload de Vídeo</h1>
+    <form id="upload-form">
+      <input type="file" id="video-file" accept="video/*" required />
+      <button type="submit" id="upload-button">Enviar Vídeo</button>
+      <div id="loading-spinner" class="spinner hidden"></div>
+    </form>
+    <p id="status"></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="upload.js"></script>
+</body>
+</html>
