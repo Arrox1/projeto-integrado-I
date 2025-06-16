@@ -1,50 +1,91 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>W3BSCHOOL - Início</title>
-  <link rel="stylesheet" href="videos.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>W3BSCHOOL - Início</title>
+    <link rel="stylesheet" href="videos.css" />
 </head>
 <body class="homepage">
-  <header class="site-header">
-    <div class="container">
-       <a href="" class="logo">
-        <img src="images/logo.png" alt="" />
-       </a>
-      <nav>
-        <div id="user-menu" class="user-menu hidden">
-          <span id="user-email"></span>
-          <div id="user-dropdown" class="dropdown hidden">
-            <button id="logout-btn">Logout</button>
-          </div>
+    <header class="site-header">
+        <div class="container">
+            <a href="" class="logo">
+                <img src="images/logo.png" alt="" />
+            </a>
+            <nav>
+                <div id="user-menu" class="user-menu hidden">
+                    <span id="user-email"></span>
+                    <div id="user-dropdown" class="dropdown hidden">
+                        <button id="logout-btn">Logout</button>
+                    </div>
+                </div>
+            </nav>
         </div>
-      </nav>
-    </div>
-  </header>
-  <main>
-    <section class="filters">
-      <input type="text" id="searchMateria" placeholder="Pesquisar matéria..." autocomplete="off" />
-      <select id="materiaSelect" aria-label="Selecione a Matéria">
-        <option value="">Selecione a Matéria</option>
-      </select>
-      <select id="moduloSelect" aria-label="Selecione o Módulo" disabled>
-        <option value="">Selecione o Módulo</option>
-      </select>
-      <select id="aulaSelect" aria-label="Selecione a Aula" disabled>
-        <option value="">Selecione a Aula</option>
-      </select>
-    </section>
+    </header>
 
-    <ul class="lesson-list" id="lessonList"></ul>
+    <main>
+        <section class="filters">
+            <input type="text" id="searchMateria" placeholder="Pesquisar matéria..." autocomplete="off" />
+            <select id="materiaSelect" aria-label="Selecione a Matéria">
+                <option value="">Selecione a Matéria</option>
+            </select>
+            <select id="moduloSelect" aria-label="Selecione o Módulo" disabled>
+                <option value="">Selecione o Módulo</option>
+            </select>
+            <select id="aulaSelect" aria-label="Selecione a Aula" disabled>
+                <option value="">Selecione a Aula</option>
+            </select>
+        </section>
 
-    <div class="video-player" id="videoPlayer" style="display:none;">
-      <video controls id="videoElement" poster="">
-        Seu navegador não suporta o elemento de vídeo.
-      </video>
-      <h3 id="videoTitle"></h3>
-    </div>
-  </main>
-  <script type="module" src="app.js"></script>
+        <ul class="lesson-list" id="lessonList"></ul>
+
+        <div class="video-player" id="videoPlayer" style="display:none;">
+            <video controls id="videoElement" poster="">
+                Seu navegador não suporta o elemento de vídeo.
+            </video>
+            <h3 id="videoTitle"></h3>
+            
+            <!-- SEÇÃO DE COMENTÁRIOS E AVALIAÇÕES -->
+            <div class="comments-section" id="commentsSection">
+                <div class="rating-summary" id="ratingSummary">
+                    <div class="rating-number" id="averageRating">0.0</div>
+                    <div class="rating-info">
+                        <div class="rating-stars" id="averageStars">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                        </div>
+                        <div class="rating-count" id="ratingCount">0 avaliações</div>
+                    </div>
+                </div>
+
+                <div class="add-review">
+                    <h4>Deixe sua avaliação</h4>
+                    <div class="rating-input" id="ratingInput">
+                        <span>Sua nota:</span>
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                    <textarea 
+                        class="comment-input" 
+                        id="commentInput" 
+                        placeholder="Escreva seu comentário sobre este vídeo..."
+                    ></textarea>
+                    <button class="submit-btn" id="submitComment">Enviar Avaliação</button>
+                </div>
+
+                <div class="comments-list" id="commentsList">
+                    <div class="loading">Carregando comentários...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="app.js"></script>
 </body>
 </html>

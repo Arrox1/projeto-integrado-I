@@ -1,10 +1,12 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
 // 🔑 Substitua pelas suas credenciais do Supabase:
 const SUPABASE_URL = 'https://llcxblljabowzahodeui.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsY3hibGxqYWJvd3phaG9kZXVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NDQyNzgsImV4cCI6MjA2MzIyMDI3OH0.J-2AH-b0kMyItvgymSl_3H7tEdxRMqh_slkdsKKcAQI'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
+// =============== ELEMENTOS DO DOM ===============
 const searchMateriaInput = document.getElementById('searchMateria')
 const materiaSelect = document.getElementById('materiaSelect')
 const moduloSelect = document.getElementById('moduloSelect')
@@ -13,11 +15,26 @@ const lessonList = document.getElementById('lessonList')
 const videoPlayer = document.getElementById('videoPlayer')
 const videoElement = document.getElementById('videoElement')
 const videoTitle = document.getElementById('videoTitle')
+const commentsSection = document.getElementById('commentsSection')
 
+// Elementos dos comentários
+const averageRating = document.getElementById('averageRating')
+const averageStars = document.getElementById('averageStars')
+const ratingCount = document.getElementById('ratingCount')
+const ratingInput = document.getElementById('ratingInput')
+const commentInput = document.getElementById('commentInput')
+const submitComment = document.getElementById('submitComment')
+const commentsList = document.getElementById('commentsList')
+
+// =============== VARIÁVEIS GLOBAIS ===============
 let materias = []
 let modulos = []
 let aulas = []
+let currentUser = null
+let currentAulaId = null
+let selectedRating = 0
 
+// =============== FUNÇÕES ORIGINAIS (MANTIDAS) ===============
 function populateSelect(selectEl, items, placeholder) {
   selectEl.innerHTML = `<option value="">${placeholder}</option>`
   items.forEach(item => {
@@ -94,76 +111,258 @@ function renderLessonList(aulas) {
     li.textContent = aula.titulo
     li.dataset.video = aula.video_url
     li.dataset.titulo = aula.titulo
+    li.dataset.aulaId = aula.id
     li.addEventListener('click', () => {
       document.querySelectorAll('#lessonList li').forEach(el => el.classList.remove('active'))
       li.classList.add('active')
-      playVideo(aula.video_url, aula.titulo)
+      playVideo(aula.video_url, aula.titulo, aula.id)
     })
     lessonList.appendChild(li)
   })
 }
 
-function playVideo(url, titulo) {
+function playVideo(url, titulo, aulaId) {
   if (!url) return
   videoElement.src = url
   videoTitle.textContent = titulo
   videoPlayer.style.display = 'block'
+  currentAulaId = aulaId
+  
+  // Carrega comentários para esta aula
+  loadComments(aulaId)
+  
   videoElement.scrollIntoView({ behavior: 'smooth' })
 }
 
-searchMateriaInput.addEventListener('input', () => {
-  const term = searchMateriaInput.value.toLowerCase()
-  const filtradas = materias.filter(m => m.nome.toLowerCase().includes(term))
-  populateSelect(materiaSelect, filtradas, 'Selecione a Matéria')
-})
+// =============== NOVAS FUNÇÕES PARA COMENTÁRIOS ===============
 
-materiaSelect.addEventListener('change', (e) => {
-  const materiaId = e.target.value
-  loadModulos(materiaId)
-})
+function setupRatingInput() {
+  const stars = ratingInput.querySelectorAll('.star[data-rating]')
+  
+  stars.forEach(star => {
+    star.addEventListener('click', () => {
+      selectedRating = parseInt(star.dataset.rating)
+      updateRatingDisplay(stars, selectedRating)
+    })
 
-moduloSelect.addEventListener('change', (e) => {
-  const moduloId = e.target.value
-  loadAulas(moduloId)
-})
-
-aulaSelect.addEventListener('change', (e) => {
-  const aulaId = parseInt(e.target.value)
-  const aula = aulas.find(a => a.id === aulaId)
-  if (aula) {
-    playVideo(aula.video_url, aula.titulo)
-  }
-})
-
-// 🔁 Inicializa carregando todas as matérias
-loadMaterias()
-
-// 🧠 Mostra o email do usuário logado
-async function checkAuthStatus() {
-  const { data: { user } } = await supabase.auth.getUser()
-
-  const userMenu = document.getElementById('user-menu')
-  const userEmailSpan = document.getElementById('user-email')
-  const userDropdown = document.getElementById('user-dropdown')
-
-  if (user) {
-    userMenu.classList.remove('hidden')
-    userEmailSpan.textContent = user.email
-  } else {
-    // Redireciona se não estiver logado
-    window.location.href = 'login.html'
-  }
-
-  // Toggle do dropdown
-  userEmailSpan.addEventListener('click', () => {
-    userDropdown.classList.toggle('hidden')
+    star.addEventListener('mouseover', () => {
+      const rating = parseInt(star.dataset.rating)
+      updateRatingDisplay(stars, rating)
+    })
   })
 
-  // Logout
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    await supabase.auth.signOut()
-    window.location.href = 'index.html'
+  ratingInput.addEventListener('mouseleave', () => {
+    updateRatingDisplay(stars, selectedRating)
   })
 }
 
-checkAuthStatus()
+function updateRatingDisplay(stars, rating) {
+  stars.forEach((star, index) => {
+    if (index < rating) {
+      star.classList.add('filled')
+    } else {
+      star.classList.remove('filled')
+    }
+  })
+}
+
+function updateAverageRating(stars, rating) {
+  stars.forEach((star, index) => {
+    if (index < Math.floor(rating)) {
+      star.classList.add('filled')
+    } else if (index < rating) {
+      // Para estrelas parciais, você pode adicionar uma classe especial se quiser
+      star.classList.remove('filled')
+    } else {
+      star.classList.remove('filled')
+    }
+  })
+}
+
+async function loadComments(aulaId) {
+  commentsList.innerHTML = '<div class="loading">Carregando comentários...</div>'
+  
+  const { data, error } = await supabase
+    .from('aula_comments')
+    .select(`
+      *,
+      user_email
+    `)
+    .eq('aula_id', aulaId)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Erro ao carregar comentários:', error)
+    commentsList.innerHTML = '<div class="no-comments">Erro ao carregar comentários</div>'
+    return
+  }
+
+  renderComments(data)
+  updateRatingSummary(data)
+}
+
+function renderComments(comments) {
+  if (!comments || comments.length === 0) {
+    commentsList.innerHTML = '<div class="no-comments">Seja o primeiro a comentar este vídeo!</div>'
+    return
+  }
+
+  commentsList.innerHTML = comments.map(comment => `
+    <div class="comment">
+      <div class="comment-header">
+        <div>
+          <div class="comment-author">${comment.user_email}</div>
+          <div class="comment-date">${formatDate(comment.created_at)}</div>
+        </div>
+        <div class="comment-rating">
+          ${generateStarsHTML(comment.rating)}
+        </div>
+      </div>
+      <p class="comment-text">${escapeHtml(comment.comment)}</p>
+    </div>
+  `).join('')
+}
+
+function generateStarsHTML(rating) {
+  return Array.from({length: 5}, (_, i) => 
+    `<span class="star ${i < rating ? 'filled' : ''}">★</span>`
+  ).join('')
+}
+
+function updateRatingSummary(comments) {
+  if (!comments || comments.length === 0) {
+    averageRating.textContent = '0.0'
+    ratingCount.textContent = '0 avaliações'
+    updateAverageRating(averageStars.querySelectorAll('.star'), 0)
+    return
+  }
+
+  const totalRating = comments.reduce((sum, comment) => sum + comment.rating, 0)
+  const avgRating = totalRating / comments.length
+  
+  averageRating.textContent = avgRating.toFixed(1)
+  ratingCount.textContent = `${comments.length} ${comments.length === 1 ? 'avaliação' : 'avaliações'}`
+  updateAverageRating(averageStars.querySelectorAll('.star'), avgRating)
+}
+
+function formatDate(dateString) {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('pt-BR') + ' às ' + date.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div')
+  div.textContent = text
+  return div.innerHTML
+}
+
+async function submitReview() {
+            if (!currentUser) {
+                alert('Você precisa estar logado para comentar')
+                return
+            }
+
+            if (!selectedRating) {
+                alert('Por favor, selecione uma nota de 1 a 5 estrelas')
+                return
+            }
+
+            const comment = commentInput.value.trim()
+            if (!comment) {
+                alert('Por favor, escreva um comentário')
+                return
+            }
+
+            submitComment.disabled = true
+            submitComment.textContent = 'Enviando...'
+
+            const { data, error } = await supabase
+                .from('aula_comments')
+                .insert([
+                    {
+                        aula_id: currentAulaId,
+                        user_id: currentUser.id,
+                        user_email: currentUser.email,
+                        rating: selectedRating,
+                        comment: comment
+                    }
+                ])
+
+            if (error) {
+                console.error('Erro ao enviar comentário:', error)
+                alert('Erro ao enviar comentário. Tente novamente.')
+            } else {
+                // Limpa o formulário
+                commentInput.value = ''
+                selectedRating = 0
+                updateRatingDisplay(ratingInput.querySelectorAll('.star[data-rating]'), 0)
+                
+                // Recarrega os comentários
+                loadComments(currentAulaId)
+            }
+
+            submitComment.disabled = false
+            submitComment.textContent = 'Enviar Avaliação'
+        }
+
+        // Event Listeners originais
+        searchMateriaInput.addEventListener('input', () => {
+            const term = searchMateriaInput.value.toLowerCase()
+            const filtradas = materias.filter(m => m.nome.toLowerCase().includes(term))
+            populateSelect(materiaSelect, filtradas, 'Selecione a Matéria')
+        })
+
+        materiaSelect.addEventListener('change', (e) => {
+            const materiaId = e.target.value
+            loadModulos(materiaId)
+        })
+
+        moduloSelect.addEventListener('change', (e) => {
+            const moduloId = e.target.value
+            loadAulas(moduloId)
+        })
+
+        aulaSelect.addEventListener('change', (e) => {
+            const aulaId = parseInt(e.target.value)
+            const aula = aulas.find(a => a.id === aulaId)
+            if (aula) {
+                playVideo(aula.video_url, aula.titulo, aula.id)
+            }
+        })
+
+        // Novos Event Listeners para comentários
+        submitComment.addEventListener('click', submitReview)
+
+        // Verificação de autenticação
+        async function checkAuthStatus() {
+            const { data: { user } } = await supabase.auth.getUser()
+
+            const userMenu = document.getElementById('user-menu')
+            const userEmailSpan = document.getElementById('user-email')
+            const userDropdown = document.getElementById('user-dropdown')
+
+            if (user) {
+                currentUser = user
+                userMenu.classList.remove('hidden')
+                userEmailSpan.textContent = user.email
+            } else {
+                window.location.href = 'login.html'
+            }
+
+            userEmailSpan.addEventListener('click', () => {
+                userDropdown.classList.toggle('hidden')
+            })
+
+            document.getElementById('logout-btn').addEventListener('click', async () => {
+                await supabase.auth.signOut()
+                window.location.href = 'index.html'
+            })
+        }
+
+        // Inicialização
+        loadMaterias()
+        checkAuthStatus()
+        setupRatingInput()
