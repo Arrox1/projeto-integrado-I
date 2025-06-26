@@ -13,9 +13,11 @@
                 <img src="images/logo.png" alt="" />
             </a>
             <nav>
+                <a href="upload.html" class="nav-link highlight">Enviar video</a>
                 <div id="user-menu" class="user-menu hidden">
                     <span id="user-email"></span>
                     <div id="user-dropdown" class="dropdown hidden">
+                        <button id="settings-btn">Definições</button>
                         <button id="logout-btn">Logout</button>
                     </div>
                 </div>
@@ -27,22 +29,32 @@
         <section class="filters">
             <input type="text" id="searchMateria" placeholder="Pesquisar matéria..." autocomplete="off" />
             <select id="materiaSelect" aria-label="Selecione a Matéria">
-                <option value="">Selecione a Matéria</option>
+                <option value="">Selecione o ano</option>
             </select>
             <select id="moduloSelect" aria-label="Selecione o Módulo" disabled>
-                <option value="">Selecione o Módulo</option>
+                <option value="">Selecione a matéria</option>
             </select>
             <select id="aulaSelect" aria-label="Selecione a Aula" disabled>
-                <option value="">Selecione a Aula</option>
+                <option value="">Selecione a aula</option>
             </select>
         </section>
 
         <ul class="lesson-list" id="lessonList"></ul>
 
-        <div class="video-player" id="videoPlayer" style="display:none;">
-            <video controls id="videoElement" poster="">
-                Seu navegador não suporta o elemento de vídeo.
-            </video>
+          <div class="video-player" id="videoPlayer" style="display:none;">
+            <!-- Substituído o elemento video por iframe do YouTube -->
+            <div class="youtube-player-container">
+                <iframe 
+                    id="youtubePlayer" 
+                    width="100%" 
+                    height="450" 
+                    src="" 
+                    title="YouTube video player" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    allowfullscreen>
+                </iframe>
+            </div>
             <h3 id="videoTitle"></h3>
             
             <!-- SEÇÃO DE COMENTÁRIOS E AVALIAÇÕES -->
@@ -86,6 +98,7 @@
         </div>
     </main>
 
+    
     <script type="module" src="app.js"></script>
 </body>
 </html>

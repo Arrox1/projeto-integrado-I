@@ -13,7 +13,7 @@ const moduloSelect = document.getElementById('moduloSelect')
 const aulaSelect = document.getElementById('aulaSelect')
 const lessonList = document.getElementById('lessonList')
 const videoPlayer = document.getElementById('videoPlayer')
-const videoElement = document.getElementById('videoElement')
+const youtubePlayer = document.getElementById('youtubePlayer') // Mudança aqui
 const videoTitle = document.getElementById('videoTitle')
 const commentsSection = document.getElementById('commentsSection')
 
@@ -33,6 +33,24 @@ let aulas = []
 let currentUser = null
 let currentAulaId = null
 let selectedRating = 0
+
+// =============== FUNÇÃO PARA CONVERTER URL DO YOUTUBE ===============
+function getYouTubeEmbedUrl(url) {
+    if (!url) return null
+    
+    // Regex para extrair o ID do vídeo do YouTube de diferentes formatos de URL
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
+    const match = url.match(regExp)
+    
+    if (match && match[2].length === 11) {
+        const videoId = match[2]
+        return `https://www.youtube.com/embed/${videoId}`
+    }
+    
+    // Se não for uma URL do YouTube válida, retorna null
+    console.warn('URL do YouTube inválida:', url)
+    return null
+}
 
 // =============== FUNÇÕES ORIGINAIS (MANTIDAS) ===============
 function populateSelect(selectEl, items, placeholder) {
@@ -121,9 +139,22 @@ function renderLessonList(aulas) {
   })
 }
 
+// =============== FUNÇÃO MODIFICADA PARA YOUTUBE ===============
 function playVideo(url, titulo, aulaId) {
-  if (!url) return
-  videoElement.src = url
+  if (!url) {
+    console.error('URL do vídeo não fornecida')
+    return
+  }
+
+  const embedUrl = getYouTubeEmbedUrl(url)
+  
+  if (!embedUrl) {
+    console.error('Não foi possível converter a URL para embed do YouTube:', url)
+    alert('URL do YouTube inválida. Verifique se o link está correto.')
+    return
+  }
+
+  youtubePlayer.src = embedUrl
   videoTitle.textContent = titulo
   videoPlayer.style.display = 'block'
   currentAulaId = aulaId
@@ -131,10 +162,11 @@ function playVideo(url, titulo, aulaId) {
   // Carrega comentários para esta aula
   loadComments(aulaId)
   
-  videoElement.scrollIntoView({ behavior: 'smooth' })
+  // Scroll suave para o player
+  videoPlayer.scrollIntoView({ behavior: 'smooth' })
 }
 
-// =============== NOVAS FUNÇÕES PARA COMENTÁRIOS ===============
+// =============== FUNÇÕES PARA COMENTÁRIOS (MANTIDAS) ===============
 
 function setupRatingInput() {
   const stars = ratingInput.querySelectorAll('.star[data-rating]')
@@ -237,17 +269,21 @@ function updateRatingSummary(comments) {
     return
   }
 
-  const totalRating = comments.reduce((sum, comment) => sum + comment.rating, 0)
-  const avgRating = totalRating / comments.length
-  
-  averageRating.textContent = avgRating.toFixed(1)
+const totalRating = comments.reduce((sum, comment) => sum + comment.rating, 0)
+  const average = totalRating / comments.length
+
+  averageRating.textContent = average.toFixed(1)
   ratingCount.textContent = `${comments.length} ${comments.length === 1 ? 'avaliação' : 'avaliações'}`
-  updateAverageRating(averageStars.querySelectorAll('.star'), avgRating)
+  updateAverageRating(averageStars.querySelectorAll('.star'), average)
 }
 
-function formatDate(dateString) {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('pt-BR') + ' às ' + date.toLocaleTimeString('pt-BR', {
+// =============== UTILITÁRIOS ===============
+function formatDate(isoString) {
+  const date = new Date(isoString)
+  return date.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
   })
@@ -259,108 +295,84 @@ function escapeHtml(text) {
   return div.innerHTML
 }
 
-async function submitReview() {
-            if (!currentUser) {
-                alert('Você precisa estar logado para comentar')
-                return
-            }
+// =============== ENVIO DE COMENTÁRIOS ===============
+submitComment.addEventListener('click', async () => {
+  if (!currentAulaId || selectedRating === 0 || !commentInput.value.trim()) {
+    alert('Por favor, forneça uma nota e um comentário.')
+    return
+  }
 
-            if (!selectedRating) {
-                alert('Por favor, selecione uma nota de 1 a 5 estrelas')
-                return
-            }
+  const commentData = {
+    aula_id: currentAulaId,
+    rating: selectedRating,
+    comment: commentInput.value.trim(),
+    user_email: 'usuário@exemplo.com' // Substitua por autenticação real, se disponível
+  }
 
-            const comment = commentInput.value.trim()
-            if (!comment) {
-                alert('Por favor, escreva um comentário')
-                return
-            }
+  const { error } = await supabase.from('aula_comments').insert([commentData])
 
-            submitComment.disabled = true
-            submitComment.textContent = 'Enviando...'
+  if (error) {
+    console.error('Erro ao enviar comentário:', error)
+    alert('Erro ao enviar comentário. Tente novamente.')
+    return
+  }
 
-            const { data, error } = await supabase
-                .from('aula_comments')
-                .insert([
-                    {
-                        aula_id: currentAulaId,
-                        user_id: currentUser.id,
-                        user_email: currentUser.email,
-                        rating: selectedRating,
-                        comment: comment
-                    }
-                ])
+  commentInput.value = ''
+  selectedRating = 0
+  updateRatingDisplay(ratingInput.querySelectorAll('.star[data-rating]'), 0)
+  loadComments(currentAulaId)
+})
 
-            if (error) {
-                console.error('Erro ao enviar comentário:', error)
-                alert('Erro ao enviar comentário. Tente novamente.')
+// =============== EVENTOS INICIAIS ===============
+materiaSelect.addEventListener('change', () => {
+  const materiaId = materiaSelect.value
+  loadModulos(materiaId)
+})
+
+moduloSelect.addEventListener('change', () => {
+  const moduloId = moduloSelect.value
+  loadAulas(moduloId)
+})
+
+aulaSelect.addEventListener('change', () => {
+  const selected = aulas.find(a => a.id == aulaSelect.value)
+  if (selected) {
+    playVideo(selected.video_url, selected.titulo, selected.id)
+  }
+})
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadMaterias()
+  setupRatingInput()
+})
+
+
+// Verificação de autenticação
+async function checkAuthStatus() {
+  const { data: { user } } = await supabase.auth.getUser()
+
+  const userMenu = document.getElementById('user-menu')
+  const userEmailSpan = document.getElementById('user-email')
+  const userDropdown = document.getElementById('user-dropdown')
+
+  if (user) {
+             currentUser = user
+             userMenu.classList.remove('hidden')
+             userEmailSpan.textContent = user.email
             } else {
-                // Limpa o formulário
-                commentInput.value = ''
-                selectedRating = 0
-                updateRatingDisplay(ratingInput.querySelectorAll('.star[data-rating]'), 0)
-                
-                // Recarrega os comentários
-                loadComments(currentAulaId)
+             window.location.href = 'login.html'
             }
 
-            submitComment.disabled = false
-            submitComment.textContent = 'Enviar Avaliação'
-        }
-
-        // Event Listeners originais
-        searchMateriaInput.addEventListener('input', () => {
-            const term = searchMateriaInput.value.toLowerCase()
-            const filtradas = materias.filter(m => m.nome.toLowerCase().includes(term))
-            populateSelect(materiaSelect, filtradas, 'Selecione a Matéria')
-        })
-
-        materiaSelect.addEventListener('change', (e) => {
-            const materiaId = e.target.value
-            loadModulos(materiaId)
-        })
-
-        moduloSelect.addEventListener('change', (e) => {
-            const moduloId = e.target.value
-            loadAulas(moduloId)
-        })
-
-        aulaSelect.addEventListener('change', (e) => {
-            const aulaId = parseInt(e.target.value)
-            const aula = aulas.find(a => a.id === aulaId)
-            if (aula) {
-                playVideo(aula.video_url, aula.titulo, aula.id)
-            }
-        })
-
-        // Novos Event Listeners para comentários
-        submitComment.addEventListener('click', submitReview)
-
-        // Verificação de autenticação
-        async function checkAuthStatus() {
-            const { data: { user } } = await supabase.auth.getUser()
-
-            const userMenu = document.getElementById('user-menu')
-            const userEmailSpan = document.getElementById('user-email')
-            const userDropdown = document.getElementById('user-dropdown')
-
-            if (user) {
-                currentUser = user
-                userMenu.classList.remove('hidden')
-                userEmailSpan.textContent = user.email
-            } else {
-                window.location.href = 'login.html'
-            }
-
-            userEmailSpan.addEventListener('click', () => {
-                userDropdown.classList.toggle('hidden')
+             userEmailSpan.addEventListener('click', () => {
+             userDropdown.classList.toggle('hidden')
             })
 
             document.getElementById('logout-btn').addEventListener('click', async () => {
                 await supabase.auth.signOut()
                 window.location.href = 'index.html'
             })
-        }
+}
+
 
         // Inicialização
         loadMaterias()
