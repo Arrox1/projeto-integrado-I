@@ -23,11 +23,13 @@ function updateForm() {
     ? `Ainda não tens conta? <a href="#" id="toggle-link">Criar conta</a>`
     : `Já tens conta? <a href="#" id="toggle-link">Entrar</a>`;
   errorMessage.textContent = "";
+
+  // Mostrar/ocultar campos conforme o modo
   confirmPasswordContainer.style.display = isLogin ? "none" : "block";
   nameContainer.style.display = isLogin ? "none" : "block";
 }
 
-// Alternar entre login e criação de conta
+// Alternar entre login/criação
 toggleText.addEventListener("click", (e) => {
   if (e.target && e.target.id === "toggle-link") {
     e.preventDefault();
@@ -41,7 +43,7 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   errorMessage.textContent = "";
 
-  const email = document.getElementById("email").value.trim();
+  const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
   if (!email || !password) {
@@ -50,6 +52,7 @@ form.addEventListener("submit", async (e) => {
   }
 
   if (isLogin) {
+    // Login
     const { error } = await client.auth.signInWithPassword({ email, password });
     if (error) {
       errorMessage.textContent = "Erro ao entrar: " + error.message;
@@ -57,11 +60,12 @@ form.addEventListener("submit", async (e) => {
       window.location.href = "videos.html";
     }
   } else {
-    const name = document.getElementById("name").value.trim();
+    // Criação de conta
     const confirmPassword = document.getElementById("confirm-password").value;
+    const name = document.getElementById("name").value;
 
     if (!name) {
-      errorMessage.textContent = "Por favor, preenche o nome.";
+      errorMessage.textContent = "Preenche o campo de nome.";
       return;
     }
 
@@ -74,7 +78,9 @@ form.addEventListener("submit", async (e) => {
       email,
       password,
       options: {
-        data: { name }
+        data: {
+          full_name: name  // Aqui define o nome no Supabase!
+        }
       }
     });
 
@@ -88,5 +94,5 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// Inicializar
+// Inicializar formulário
 updateForm();

@@ -5,7 +5,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-// =============== ELEMENTOS DO DOM ===============
 const searchMateriaInput = document.getElementById('searchMateria')
 const materiaSelect = document.getElementById('materiaSelect')
 const moduloSelect = document.getElementById('moduloSelect')
@@ -14,10 +13,9 @@ const lessonList = document.getElementById('lessonList')
 const videoPlayer = document.getElementById('videoPlayer')
 const youtubePlayer = document.getElementById('youtubePlayer')
 const videoTitle = document.getElementById('videoTitle')
-const videoDescription = document.getElementById('videoDescription') // ADICIONADO
+const videoDescription = document.getElementById('videoDescription')
 const commentsSection = document.getElementById('commentsSection')
 
-// Comentários
 const averageRating = document.getElementById('averageRating')
 const averageStars = document.getElementById('averageStars')
 const ratingCount = document.getElementById('ratingCount')
@@ -37,11 +35,7 @@ function getYouTubeEmbedUrl(url) {
   if (!url) return null
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
   const match = url.match(regExp)
-  if (match && match[2].length === 11) {
-    return `https://www.youtube.com/embed/${match[2]}`
-  }
-  console.warn('URL do YouTube inválida:', url)
-  return null
+  return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : null
 }
 
 function populateSelect(selectEl, items, placeholder) {
@@ -53,7 +47,7 @@ function populateSelect(selectEl, items, placeholder) {
 }
 
 async function loadMaterias() {
-  const { data, error } = await supabase.from('materias').select('id, nome').order('nome', { ascending: true })
+  const { data, error } = await supabase.from('materias').select('id, nome').order('nome')
   if (error) return console.error('Erro ao carregar matérias:', error)
   materias = data
   populateSelect(materiaSelect, materias, 'Selecione a Matéria')
@@ -65,7 +59,7 @@ async function loadModulos(materiaId) {
     populateSelect(aulaSelect, [], 'Selecione a Aula')
     return
   }
-  const { data, error } = await supabase.from('modulos').select('id, nome').eq('materia_id', materiaId).order('ordem', { ascending: true })
+  const { data, error } = await supabase.from('modulos').select('id, nome').eq('materia_id', materiaId).order('ordem')
   if (error) return console.error('Erro ao carregar módulos:', error)
   modulos = data
   populateSelect(moduloSelect, modulos, 'Selecione o Módulo')
@@ -77,13 +71,7 @@ async function loadAulas(moduloId) {
     populateSelect(aulaSelect, [], 'Selecione a Aula')
     return
   }
-
-  const { data, error } = await supabase
-    .from('aulas')
-    .select('id, titulo, video_url, descricao') // ADICIONADO descricao
-    .eq('modulo_id', moduloId)
-    .order('ordem', { ascending: true })
-
+  const { data, error } = await supabase.from('aulas').select('id, titulo, video_url, descricao').eq('modulo_id', moduloId).order('ordem')
   if (error) return console.error('Erro ao carregar aulas:', error)
   aulas = data
   populateSelect(aulaSelect, aulas, 'Selecione a Aula')
@@ -98,25 +86,22 @@ function renderLessonList(aulas) {
     li.dataset.video = aula.video_url
     li.dataset.titulo = aula.titulo
     li.dataset.aulaId = aula.id
-    li.dataset.descricao = aula.descricao // ADICIONADO
+    li.dataset.descricao = aula.descricao
     li.addEventListener('click', () => {
       document.querySelectorAll('#lessonList li').forEach(el => el.classList.remove('active'))
       li.classList.add('active')
-      playVideo(aula.video_url, aula.titulo, aula.id, aula.descricao) // MODIFICADO
+      playVideo(aula.video_url, aula.titulo, aula.id, aula.descricao)
     })
     lessonList.appendChild(li)
   })
 }
 
-function playVideo(url, titulo, aulaId, descricao = '') { // MODIFICADO
+function playVideo(url, titulo, aulaId, descricao = '') {
   const embedUrl = getYouTubeEmbedUrl(url)
-  if (!embedUrl) {
-    alert('URL do YouTube inválida.')
-    return
-  }
+  if (!embedUrl) return alert('URL do YouTube inválida.')
   youtubePlayer.src = embedUrl
   videoTitle.textContent = titulo
-  videoDescription.textContent = descricao || '' // EXIBE DESCRIÇÃO
+  videoDescription.textContent = descricao
   videoPlayer.style.display = 'block'
   currentAulaId = aulaId
   loadComments(aulaId)
@@ -173,7 +158,7 @@ function renderComments(comments) {
     <div class="comment">
       <div class="comment-header">
         <div>
-          <div class="comment-author">${comment.user_email}</div>
+          <div class="comment-author">${escapeHtml(comment.user_name || 'Usuário')}</div>
           <div class="comment-date">${formatDate(comment.created_at)}</div>
         </div>
         <div class="comment-rating">
@@ -206,11 +191,7 @@ function updateRatingSummary(comments) {
 function formatDate(isoString) {
   const date = new Date(isoString)
   return date.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
   })
 }
 
@@ -226,11 +207,14 @@ submitComment.addEventListener('click', async () => {
     return
   }
 
+  const userName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email
+
   const commentData = {
     aula_id: currentAulaId,
     rating: selectedRating,
     comment: commentInput.value.trim(),
-    user_email: 'usuário@exemplo.com'
+    user_id: currentUser.id,
+    user_name: userName
   }
 
   const { error } = await supabase.from('aula_comments').insert([commentData])
@@ -246,18 +230,11 @@ submitComment.addEventListener('click', async () => {
   loadComments(currentAulaId)
 })
 
-// EVENTOS
-materiaSelect.addEventListener('change', () => {
-  loadModulos(materiaSelect.value)
-})
-moduloSelect.addEventListener('change', () => {
-  loadAulas(moduloSelect.value)
-})
+materiaSelect.addEventListener('change', () => loadModulos(materiaSelect.value))
+moduloSelect.addEventListener('change', () => loadAulas(moduloSelect.value))
 aulaSelect.addEventListener('change', () => {
   const selected = aulas.find(a => a.id == aulaSelect.value)
-  if (selected) {
-    playVideo(selected.video_url, selected.titulo, selected.id, selected.descricao)
-  }
+  if (selected) playVideo(selected.video_url, selected.titulo, selected.id, selected.descricao)
 })
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -266,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
   checkAuthStatus()
 })
 
-// AUTENTICAÇÃO
 async function checkAuthStatus() {
   const { data: { user } } = await supabase.auth.getUser()
   const userMenu = document.getElementById('user-menu')
@@ -276,7 +252,7 @@ async function checkAuthStatus() {
   if (user) {
     currentUser = user
     userMenu.classList.remove('hidden')
-    userEmailSpan.textContent = user.email
+    userEmailSpan.textContent = user.user_metadata.full_name || user.email
   } else {
     window.location.href = 'login.html'
   }
