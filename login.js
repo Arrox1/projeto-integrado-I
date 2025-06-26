@@ -11,10 +11,11 @@ const authButton = document.getElementById("auth-button");
 const toggleText = document.getElementById("toggle-text");
 const errorMessage = document.getElementById("error-message");
 const confirmPasswordContainer = document.getElementById("confirm-password-container");
+const nameContainer = document.getElementById("name-container");
 
 let isLogin = true;
 
-// Atualiza o formulário (login ou criar conta)
+// Atualiza o formulário
 function updateForm() {
   formTitle.textContent = isLogin ? "Entrar na W3BSCHOOL" : "Criar conta na W3BSCHOOL";
   authButton.textContent = isLogin ? "Entrar" : "Criar conta";
@@ -23,6 +24,7 @@ function updateForm() {
     : `Já tens conta? <a href="#" id="toggle-link">Entrar</a>`;
   errorMessage.textContent = "";
   confirmPasswordContainer.style.display = isLogin ? "none" : "block";
+  nameContainer.style.display = isLogin ? "none" : "block";
 }
 
 // Alternar entre login e criação de conta
@@ -39,7 +41,7 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   errorMessage.textContent = "";
 
-  const email = document.getElementById("email").value;
+  const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value;
 
   if (!email || !password) {
@@ -55,13 +57,27 @@ form.addEventListener("submit", async (e) => {
       window.location.href = "videos.html";
     }
   } else {
+    const name = document.getElementById("name").value.trim();
     const confirmPassword = document.getElementById("confirm-password").value;
+
+    if (!name) {
+      errorMessage.textContent = "Por favor, preenche o nome.";
+      return;
+    }
+
     if (password !== confirmPassword) {
       errorMessage.textContent = "As senhas não coincidem.";
       return;
     }
 
-    const { error } = await client.auth.signUp({ email, password });
+    const { error } = await client.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name }
+      }
+    });
+
     if (error) {
       errorMessage.textContent = "Erro ao criar conta: " + error.message;
     } else {
