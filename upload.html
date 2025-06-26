@@ -1,40 +1,54 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Upload de Vídeo</title>
-  <link rel="stylesheet" href="upload.css" />
-</head>
-<body>
+  <!DOCTYPE html>
+  <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload de Aula</title>
+    <link rel="stylesheet" href="upload.css" />
+  </head>
+  <body>
     <header class="site-header">
-    <div class="container">
-       <a href="" class="logo">
-        <img src="images/logo.png" href="index.html" alt=""/>
-       </a>
-      <nav>
-        <div id="user-menu" class="user-menu hidden">
-          <span id="user-email"></span>
-          <div id="user-dropdown" class="dropdown hidden">
-            <button id="logout-btn">Logout</button>
+      <div class="container">
+        <a href="videos.html" class="logo">
+          <img src="images/logo.png" alt="Logo" />
+        </a>
+        <nav>
+          <div id="user-menu" class="user-menu hidden">
+            <span id="user-email"></span>
+            <div id="user-dropdown" class="dropdown hidden">
+              <button id="logout-btn">Logout</button>
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
+    </header>
+
+    <div class="container2">
+      <h1>Publicar Nova Aula</h1>
+      <form id="upload-form">
+        <label for="materiaSelect">Matéria:</label>
+        <select id="materiaSelect" required></select>
+
+        <label for="moduloSelect">Módulo:</label>
+        <select id="moduloSelect" required></select>
+
+        <label for="aulaTitulo">Título da Aula:</label>
+        <input type="text" id="aulaTitulo" placeholder="Digite o título da aula" required />
+
+        <label for="descricao">Descrição (opcional):</label>
+        <textarea id="descricao" placeholder="Descrição da aula (opcional)" rows="4"></textarea>
+
+        <label for="youtubeUrl">Link do vídeo (YouTube):</label>
+        <input type="url" id="youtubeUrl" placeholder="https://youtube.com/..." required />
+
+        <button type="submit" id="upload-button">Publicar Aula</button>
+        <div id="loading-spinner" class="spinner hidden"></div>
+      </form>
+      <p id="status"></p>
     </div>
-  </header>
 
-  <div class="container2">
-    <h1>Fazer Upload de Vídeo</h1>
-    <form id="upload-form">
-      <input type="file" id="video-file" accept="video/*" required />
-      <button type="submit" id="upload-button">Enviar Vídeo</button>
-      <div id="loading-spinner" class="spinner hidden"></div>
-    </form>
-    <p id="status"></p>
-  </div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="upload.js"></script>
-<script type="module" src="showloggedemail.js"></script>
-</body>
-</html>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script type="module" src="upload.js"></script>
+    <script type="module" src="showloggedemail.js"></script>
+  </body>
+  </html>

@@ -1,11 +1,12 @@
+/* Reset e base */
 body {
   font-family: Arial, sans-serif;
   background-color: #f0f4f8;
   margin: 0;
   padding: 0;
 }
-/* header styles */
 
+/* Header */
 .site-header {
   background-color: #89CFF0;
   color: white;
@@ -14,7 +15,6 @@ body {
   top: 0;
   z-index: 100;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  border: none;
   margin-bottom: 30px;
 }
 
@@ -32,35 +32,14 @@ body {
   object-fit: contain;
 }
 
-.site-header .nav-link {
-  margin-left: 20px;
-  color: white;
-  font-weight: 600;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-
-.site-header .nav-link:hover {
-  text-decoration: underline;
-}
-
-.nav-link.highlight {
-  background: white;
-  color: #89CFF0;
-  padding: 8px 16px;
-  border-radius: 25px;
-  font-weight: bold;
-}
-
 .user-menu {
   position: relative;
-  color: white;
   font-weight: bold;
   cursor: pointer;
+  color: white;
 }
 
 .user-menu span {
-  color: white;
   padding: 8px 16px;
   border-radius: 25px;
   display: inline-block;
@@ -98,19 +77,47 @@ body {
   display: none;
 }
 
-/* main styles */
+/* Form container */
 .container2 {
+  max-width: 600px;
+  margin: 0 auto;
   background: white;
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.container2 h1 {
   text-align: center;
+  margin-bottom: 25px;
 }
 
-input[type="file"] {
+/* Form elements */
+form label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="url"],
+textarea,
+select {
+  width: 100%;
+  padding: 10px;
   margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
 
+textarea {
+  resize: vertical;
+}
+
+/* Button */
 button {
   padding: 10px 20px;
   background-color: #5aa7e9;
@@ -120,6 +127,8 @@ button {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s;
+  display: block;
+  margin: 0 auto;
 }
 
 button:disabled {
@@ -131,6 +140,7 @@ button:hover:enabled {
   background-color: #3c8ed9;
 }
 
+/* Spinner */
 .spinner {
   margin: 15px auto;
   border: 4px solid #f3f3f3;
@@ -141,18 +151,16 @@ button:hover:enabled {
   animation: spin 1s linear infinite;
 }
 
-.hidden {
-  display: none;
-}
-
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
+/* Status message */
 #status {
   margin-top: 15px;
   font-size: 1rem;
   color: green;
+  text-align: center;
 }
