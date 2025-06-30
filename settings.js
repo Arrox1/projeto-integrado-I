@@ -97,22 +97,28 @@ deleteAccountBtn.addEventListener('click', async () => {
   const confirmDelete = confirm('Tens a certeza que queres apagar a tua conta? Esta ação não pode ser desfeita.');
   if (!confirmDelete) return;
 
-  const { data: { session }, error } = await supabase.auth.getSession();
-  if (error || !session) return showMessage('Erro ao obter sessão. Tenta novamente.', true);
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError || !session) {
+    return showMessage('Erro ao obter sessão. Tenta novamente.', true);
+  }
 
+  // ⚠️ Só funciona se o utilizador estiver autenticado E com permissões de apagar-se
   const response = await fetch('https://llcxblljabowzahodeui.supabase.co/auth/v1/user', {
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${session.access_token}`
+      Authorization: `Bearer ${session.access_token}`,
+      apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsY3hibGxqYWJvd3phaG9kZXVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NDQyNzgsImV4cCI6MjA2MzIyMDI3OH0.J-2AH-b0kMyItvgymSl_3H7tEdxRMqh_slkdsKKcAQI'
     }
   });
 
   if (response.ok) {
-    showMessage('Conta apagada com sucesso. A sair...', false);
+    showMessage('Conta apagada com sucesso. A sair...');
     await supabase.auth.signOut();
     setTimeout(() => window.location.href = 'index.html', 2000);
   } else {
-    showMessage('Erro ao apagar conta.', true);
+    const errorText = await response.text();
+    showMessage('Erro ao apagar conta: ' + errorText, true);
+    console.error('Erro ao apagar:', errorText);
   }
 });
 
