@@ -1,20 +1,20 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+// ====== Supabase Config ======
 const SUPABASE_URL = 'https://llcxblljabowzahodeui.supabase.co'
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsY3hibGxqYWJvd3phaG9kZXVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc2NDQyNzgsImV4cCI6MjA2MzIyMDI3OH0.J-2AH-b0kMyItvgymSl_3H7tEdxRMqh_slkdsKKcAQI'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-const searchMateriaInput = document.getElementById('searchMateria')
+// ====== Elementos do DOM ======
 const materiaSelect = document.getElementById('materiaSelect')
 const moduloSelect = document.getElementById('moduloSelect')
 const aulaSelect = document.getElementById('aulaSelect')
 const lessonList = document.getElementById('lessonList')
-const videoPlayer = document.getElementById('videoPlayer')
 const youtubePlayer = document.getElementById('youtubePlayer')
 const videoTitle = document.getElementById('videoTitle')
 const videoDescription = document.getElementById('videoDescription')
-const commentsSection = document.getElementById('commentsSection')
+const videoPlayer = document.getElementById('videoPlayer')
 
 const averageRating = document.getElementById('averageRating')
 const averageStars = document.getElementById('averageStars')
@@ -31,8 +31,8 @@ let currentUser = null
 let currentAulaId = null
 let selectedRating = 0
 
+// ========== Funções de Vídeo e Aulas ==========
 function getYouTubeEmbedUrl(url) {
-  if (!url) return null
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/
   const match = url.match(regExp)
   return match && match[2].length === 11 ? `https://www.youtube.com/embed/${match[2]}` : null
@@ -47,18 +47,13 @@ function populateSelect(selectEl, items, placeholder) {
 }
 
 async function loadMaterias() {
-  const { data, error } = await supabase.from('materias').select('id, nome').order('nome')
+  const { data, error } = await supabase.from('materias').select('id, nome').order('nome', { ascending: true })
   if (error) return console.error('Erro ao carregar matérias:', error)
   materias = data
   populateSelect(materiaSelect, materias, 'Selecione a Matéria')
 }
 
 async function loadModulos(materiaId) {
-  if (!materiaId) {
-    populateSelect(moduloSelect, [], 'Selecione o Módulo')
-    populateSelect(aulaSelect, [], 'Selecione a Aula')
-    return
-  }
   const { data, error } = await supabase.from('modulos').select('id, nome').eq('materia_id', materiaId).order('ordem')
   if (error) return console.error('Erro ao carregar módulos:', error)
   modulos = data
@@ -67,10 +62,6 @@ async function loadModulos(materiaId) {
 }
 
 async function loadAulas(moduloId) {
-  if (!moduloId) {
-    populateSelect(aulaSelect, [], 'Selecione a Aula')
-    return
-  }
   const { data, error } = await supabase.from('aulas').select('id, titulo, video_url, descricao').eq('modulo_id', moduloId).order('ordem')
   if (error) return console.error('Erro ao carregar aulas:', error)
   aulas = data
@@ -84,9 +75,7 @@ function renderLessonList(aulas) {
     const li = document.createElement('li')
     li.textContent = aula.titulo
     li.dataset.video = aula.video_url
-    li.dataset.titulo = aula.titulo
     li.dataset.aulaId = aula.id
-    li.dataset.descricao = aula.descricao
     li.addEventListener('click', () => {
       document.querySelectorAll('#lessonList li').forEach(el => el.classList.remove('active'))
       li.classList.add('active')
@@ -108,6 +97,7 @@ function playVideo(url, titulo, aulaId, descricao = '') {
   videoPlayer.scrollIntoView({ behavior: 'smooth' })
 }
 
+// ========== Comentários e Avaliações ==========
 function setupRatingInput() {
   const stars = ratingInput.querySelectorAll('.star[data-rating]')
   stars.forEach(star => {
@@ -115,14 +105,9 @@ function setupRatingInput() {
       selectedRating = parseInt(star.dataset.rating)
       updateRatingDisplay(stars, selectedRating)
     })
-    star.addEventListener('mouseover', () => {
-      const rating = parseInt(star.dataset.rating)
-      updateRatingDisplay(stars, rating)
-    })
+    star.addEventListener('mouseover', () => updateRatingDisplay(stars, parseInt(star.dataset.rating)))
   })
-  ratingInput.addEventListener('mouseleave', () => {
-    updateRatingDisplay(stars, selectedRating)
-  })
+  ratingInput.addEventListener('mouseleave', () => updateRatingDisplay(stars, selectedRating))
 }
 
 function updateRatingDisplay(stars, rating) {
@@ -133,37 +118,45 @@ function updateRatingDisplay(stars, rating) {
 
 function updateAverageRating(stars, rating) {
   stars.forEach((star, index) => {
-    star.classList.toggle('filled', index < rating)
+    star.classList.remove('half-filled', 'filled')
+    if (index + 1 <= Math.floor(rating)) {
+      star.classList.add('filled')
+    } else if (index < rating) {
+      star.classList.add('half-filled')
+    }
   })
 }
 
 async function loadComments(aulaId) {
   commentsList.innerHTML = '<div class="loading">Carregando comentários...</div>'
-  const { data, error } = await supabase.from('aula_comments').select('*').eq('aula_id', aulaId).order('created_at', { ascending: false })
+  const { data: comments, error } = await supabase.from('aula_comments').select('*').eq('aula_id', aulaId).order('created_at', { ascending: false })
   if (error) {
     console.error('Erro ao carregar comentários:', error)
     commentsList.innerHTML = '<div class="no-comments">Erro ao carregar comentários</div>'
     return
   }
-  renderComments(data)
-  updateRatingSummary(data)
+
+  const userIds = [...new Set(comments.map(c => c.user_id))]
+  const { data: users = [] } = await supabase.from('users').select('id, full_name').in('id', userIds)
+  const usersMap = Object.fromEntries(users.map(u => [u.id, u.full_name]))
+  renderComments(comments, usersMap)
+  updateRatingSummary(comments)
 }
 
-function renderComments(comments) {
-  if (!comments || comments.length === 0) {
+function renderComments(comments, usersMap) {
+  if (!comments.length) {
     commentsList.innerHTML = '<div class="no-comments">Seja o primeiro a comentar este vídeo!</div>'
     return
   }
+
   commentsList.innerHTML = comments.map(comment => `
     <div class="comment">
       <div class="comment-header">
         <div>
-          <div class="comment-author">${escapeHtml(comment.user_name || 'Usuário')}</div>
+          <div class="comment-author">${comment.user_name || 'Anônimo'}</div>
           <div class="comment-date">${formatDate(comment.created_at)}</div>
         </div>
-        <div class="comment-rating">
-          ${generateStarsHTML(comment.rating)}
-        </div>
+        <div class="comment-rating">${generateStarsHTML(comment.rating)}</div>
       </div>
       <p class="comment-text">${escapeHtml(comment.comment)}</p>
     </div>
@@ -181,18 +174,16 @@ function updateRatingSummary(comments) {
     updateAverageRating(averageStars.querySelectorAll('.star'), 0)
     return
   }
-  const totalRating = comments.reduce((sum, c) => sum + c.rating, 0)
-  const average = totalRating / comments.length
-  averageRating.textContent = average.toFixed(1)
+  const total = comments.reduce((sum, c) => sum + c.rating, 0)
+  const avg = total / comments.length
+  averageRating.textContent = avg.toFixed(1)
   ratingCount.textContent = `${comments.length} ${comments.length === 1 ? 'avaliação' : 'avaliações'}`
-  updateAverageRating(averageStars.querySelectorAll('.star'), average)
+  updateAverageRating(averageStars.querySelectorAll('.star'), avg)
 }
 
-function formatDate(isoString) {
-  const date = new Date(isoString)
-  return date.toLocaleDateString('pt-BR', {
-    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-  })
+function formatDate(iso) {
+  const d = new Date(iso)
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
 
 function escapeHtml(text) {
@@ -207,14 +198,16 @@ submitComment.addEventListener('click', async () => {
     return
   }
 
-  const userName = currentUser.user_metadata?.full_name || currentUser.user_metadata?.name || currentUser.email
-
   const commentData = {
     aula_id: currentAulaId,
     rating: selectedRating,
     comment: commentInput.value.trim(),
     user_id: currentUser.id,
-    user_name: userName
+    user_email: currentUser.email,
+    user_name:
+      currentUser.user_metadata?.full_name ||
+      currentUser.user_metadata?.name ||
+      currentUser.email.split('@')[0]
   }
 
   const { error } = await supabase.from('aula_comments').insert([commentData])
@@ -230,19 +223,7 @@ submitComment.addEventListener('click', async () => {
   loadComments(currentAulaId)
 })
 
-materiaSelect.addEventListener('change', () => loadModulos(materiaSelect.value))
-moduloSelect.addEventListener('change', () => loadAulas(moduloSelect.value))
-aulaSelect.addEventListener('change', () => {
-  const selected = aulas.find(a => a.id == aulaSelect.value)
-  if (selected) playVideo(selected.video_url, selected.titulo, selected.id, selected.descricao)
-})
-
-document.addEventListener('DOMContentLoaded', () => {
-  loadMaterias()
-  setupRatingInput()
-  checkAuthStatus()
-})
-
+// ========== Autenticação ==========
 async function checkAuthStatus() {
   const { data: { user } } = await supabase.auth.getUser()
   const userMenu = document.getElementById('user-menu')
@@ -252,17 +233,39 @@ async function checkAuthStatus() {
   if (user) {
     currentUser = user
     userMenu.classList.remove('hidden')
-    userEmailSpan.textContent = user.user_metadata.full_name || user.email
+
+    let displayName = 'Utilizador'
+    if (user.user_metadata?.full_name) {
+      displayName = user.user_metadata.full_name
+    } else if (user.user_metadata?.name) {
+      displayName = user.user_metadata.name
+    } else if (user.email) {
+      displayName = user.email.split('@')[0]
+    }
+    userEmailSpan.textContent = displayName
+
+    userEmailSpan.addEventListener('click', () => userDropdown.classList.toggle('hidden'))
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabase.auth.signOut()
+      window.location.href = 'index.html'
+    })
+
   } else {
     window.location.href = 'login.html'
   }
-
-  userEmailSpan.addEventListener('click', () => {
-    userDropdown.classList.toggle('hidden')
-  })
-
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    await supabase.auth.signOut()
-    window.location.href = 'index.html'
-  })
 }
+
+// ========== Eventos de Interface ==========
+materiaSelect.addEventListener('change', () => loadModulos(materiaSelect.value))
+moduloSelect.addEventListener('change', () => loadAulas(moduloSelect.value))
+aulaSelect.addEventListener('change', () => {
+  const selected = aulas.find(a => a.id == aulaSelect.value)
+  if (selected) playVideo(selected.video_url, selected.titulo, selected.id, selected.descricao)
+})
+
+// ========== Inicialização ==========
+document.addEventListener('DOMContentLoaded', () => {
+  loadMaterias()
+  setupRatingInput()
+  checkAuthStatus()
+})
