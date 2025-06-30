@@ -45,18 +45,37 @@ async function checkAuthStatus() {
   } else {
     window.location.href = 'login.html'
   }
-}   
+}
 
-// Atualizar nome
+// Atualizar nome em Auth + Tabela "users"
 updateNameBtn.addEventListener('click', async () => {
   const newName = nameInput.value.trim();
   if (!newName) return showMessage('Insere um nome válido.', true);
 
-  const { error } = await supabase.auth.updateUser({
+  // 1. Atualizar no Auth (user_metadata)
+  const { error: authError } = await supabase.auth.updateUser({
     data: { full_name: newName }
   });
+  if (authError) return showMessage('Erro ao atualizar nome no Auth: ' + authError.message, true);
 
-  if (error) return showMessage('Erro ao atualizar nome: ' + error.message, true);
+  // 2. Atualizar na tabela 'users'
+  const { error: userTableError } = await supabase
+    .from('users')
+    .update({ full_name: newName })
+    .eq('id', currentUser.id);
+  if (userTableError) return showMessage('Erro ao atualizar nome na base de dados: ' + userTableError.message, true);
+
+  // 3. Atualizar todos os comentários antigos (aula_comments)
+  const { error: commentError } = await supabase
+    .from('aula_comments')
+    .update({ user_name: newName })
+    .eq('user_id', currentUser.id);
+  if (commentError) return showMessage('Nome atualizado, mas houve erro ao atualizar comentários: ' + commentError.message, true);
+
+  // 4. Atualizar texto no menu dropdown (interface)
+  const userEmailSpan = document.getElementById('user-email');
+  if (userEmailSpan) userEmailSpan.textContent = newName;
+
   showMessage('Nome atualizado com sucesso!');
 });
 
@@ -103,4 +122,5 @@ function showMessage(msg, isError = false) {
   statusMessage.style.color = isError ? 'red' : 'green';
 }
 
-init();
+// Inicializar
+checkAuthStatus();
