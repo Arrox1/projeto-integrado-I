@@ -110,3 +110,10 @@ uploadForm.addEventListener('submit', async (event) => {
     moduloSelect.innerHTML = '<option value="">Selecione o módulo</option>'
   }
 })
+
+
+/* defs button */
+
+document.getElementById('settings-btn')?.addEventListener('click', () => {
+  window.location.href = 'settings.html';
+});

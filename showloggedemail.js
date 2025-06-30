@@ -6,7 +6,9 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-// 🧠 Mostra o email do usuário logado
+let currentUser = null
+
+// 🧠 Mostra o email ou nome do usuário logado
 async function checkAuthStatus() {
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -15,22 +17,31 @@ async function checkAuthStatus() {
   const userDropdown = document.getElementById('user-dropdown')
 
   if (user) {
+    currentUser = user
     userMenu.classList.remove('hidden')
-    userEmailSpan.textContent = user.email
+
+    let displayName = 'Utilizador'
+    if (user.user_metadata?.full_name) {
+      displayName = user.user_metadata.full_name
+    } else if (user.user_metadata?.name) {
+      displayName = user.user_metadata.name
+    } else if (user.email) {
+      displayName = user.email.split('@')[0]
+    }
+    userEmailSpan.textContent = displayName
+
+    userEmailSpan.addEventListener('click', () => {
+      userDropdown.classList.toggle('hidden')
+    })
+
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      await supabase.auth.signOut()
+      window.location.href = 'index.html'
+    })
+
   } else {
     window.location.href = 'login.html'
   }
-
-  // Toggle do menu
-  userEmailSpan.addEventListener('click', () => {
-    userDropdown.classList.toggle('hidden')
-  })
-
-  // Logout
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    await supabase.auth.signOut()
-    window.location.href = 'index.html'
-  })
 }
 
 checkAuthStatus()

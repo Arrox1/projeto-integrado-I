@@ -34,12 +34,13 @@ body {
 
 .user-menu {
   position: relative;
+  color: white;
   font-weight: bold;
   cursor: pointer;
-  color: white;
 }
 
 .user-menu span {
+  color: white;
   padding: 8px 16px;
   border-radius: 25px;
   display: inline-block;
