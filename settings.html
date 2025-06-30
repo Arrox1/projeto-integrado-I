@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Definições da Conta</title>
+  <link rel="stylesheet" href="settings.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="logo">
+        <img src="images/logo.png" alt="Logo" />
+      </a>
+      <nav>
+        <a href="upload.html" class="nav-link highlight">Enviar vídeo</a>
+        <div id="user-menu" class="user-menu hidden">
+          <span id="user-email"></span>
+          <div id="user-dropdown" class="dropdown hidden">
+            <button id="settings-btn">Definições</button>
+            <button id="logout-btn">Logout</button>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container2">
+  <h1>⚙️ Definições da Conta</h1>
+
+  <section>
+    <h2>👤 Atualizar Nome</h2>
+    <div class="input-group">
+      <input type="text" id="nameInput" placeholder="Novo nome completo" />
+      <button class="button2" id="updateNameBtn">Atualizar Nome</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>🔒 Alterar Palavra-Passe</h2>
+    <div class="input-group">
+      <input type="password" id="passwordInput" placeholder="Nova palavra-passe" />
+      <button class="button2" id="updatePasswordBtn">Alterar Palavra-Passe</button>
+    </div>
+  </section>
+
+  <section class="danger">
+    <h2>🚫 Eliminar Conta</h2>
+    <div class="input-group">
+      <button class="button2" id="deleteAccountBtn">🗑️ Apagar Conta Permanentemente</button>
+    </div>
+  </section>
+
+  <div id="statusMessage"></div>
+</div>
+
+
+  <footer>
+        <div class="ascolunasdofooter">
+          <div class="coluna">
+            <p style="font-weight: bold;"> W3BSCHOOL  </p>
+            <p>Uma marca da Associação recreativa da pena</p>
+            <div class="imagenszinhas">
+                <a class="fa fa-instagram" ></a>
+                <a class="fa fa-facebook"></a>
+                <a class="fa fa-linkedin"></a>
+                <a class="fa fa-youtube-play" href="https://www.youtube.com/watch?v=K1C7QlH9rtI"></a>
+            </div> 
+            </div>
+            <div class="coluna">
+                <a style="font-weight: bold;">Empresa</a>
+                <p>Sobre nós</p>
+                <p>Carreira</p>
+                <p>Parceiros</p>
+                <p>Contacto</p>
+            </div>
+            <div class="coluna">
+                <a style="font-weight: bold;">Contacto</a>
+                <p>support@w3bschool.pt</p>
+                <p>(+351) 931 699 000</p>
+        </div>
+      </div>
+        <p class="copy">© W3BSCHOOL - Associação Recreativa da Pena • Tiago Silva • Levi Coelho • Daniel Cocharro</p>
+      </footer>
+      
+  <script type="module" src="settings.js"></script>
+</body>
+</html>

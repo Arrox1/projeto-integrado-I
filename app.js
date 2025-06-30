@@ -269,3 +269,9 @@ document.addEventListener('DOMContentLoaded', () => {
   setupRatingInput()
   checkAuthStatus()
 })
+
+// ========= Botão defs ===========
+
+document.getElementById('settings-btn')?.addEventListener('click', () => {
+  window.location.href = 'settings.html';
+});
