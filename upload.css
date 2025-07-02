@@ -68,6 +68,7 @@ body {
   width: 100%;
   padding: 8px 10px;
   text-align: left;
+  font-size: 13.333px;
 }
 
 .user-menu .dropdown button:hover {
